@@ -1,0 +1,20 @@
+{
+  "name": "adafruit-feather-tmp117",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": "..",
+    "target": "development"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.Go",
+        "tinygo.vscode-tinygo"
+      ]
+    }
+  }
+}
