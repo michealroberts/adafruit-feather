@@ -15,6 +15,10 @@ import (
 
 /**************************************************************************************/
 
+const DefaultTMP117I2CAddress uint16 = 0x48
+
+/**************************************************************************************/
+
 // Device represents an Adafruit TMP117 temperature sensor connected over I2C.
 type Device struct {
 	address uint16      // I2C address of the sensor
