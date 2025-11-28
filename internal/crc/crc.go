@@ -18,3 +18,9 @@ import (
 var Polynomial uint32 = crc32.IEEE
 
 /**************************************************************************************/
+
+// Table is a precomputed CRC32 table using the IEEE polynomial for efficient
+// checksum calculations.
+var Table = crc32.MakeTable(Polynomial)
+
+/**************************************************************************************/
