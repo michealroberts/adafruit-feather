@@ -18,3 +18,12 @@ const SyncByte uint8 = 0xAA
 const Version uint8 = 0x01
 
 /**************************************************************************************/
+
+// Flags used in the protocol frame to indicate specific conditions:
+const (
+	FlagIsRequest uint8 = 1 << 0
+	FlagIsError   uint8 = 1 << 1
+	// Bits 2..7 reserved for future use.
+)
+
+/**************************************************************************************/
