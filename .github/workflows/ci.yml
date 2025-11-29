@@ -27,6 +27,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         go: ["1.25.x"]
+        tinygo: ['0.39.0']
 
     runs-on: ${{ matrix.os }}
 
@@ -39,6 +40,12 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go }}
+
+      # Setup our TinyGo environment 🧬
+      - name: Setup TinyGo Environment
+        uses: acifani/setup-tinygo@v2
+        with:
+          tinygo-version: ${{ matrix.tinygo }}
 
       # Install Go Staticcheck
       - name: Install Go Staticcheck
@@ -64,6 +71,6 @@ jobs:
       - name: Go Critic
         run: make critic
 
-      # Run Go Test
-      - name: Go Test 🧪
+      # Run TinyGo Test
+      - name: Tiny Go Test 🧪
         run: make test
