@@ -89,3 +89,35 @@ func TestSetRequestFlag(t *testing.T) {
 }
 
 /**************************************************************************************/
+
+func TestFrameIsResponse(t *testing.T) {
+	t.Run("IsResponse", func(t *testing.T) {
+		frame := Frame{
+			Header: Header{
+				Flags: 0,
+			},
+		}
+
+		want := true
+
+		if frame.IsResponse() != want {
+			t.Fatalf("IsResponse = false, want true")
+		}
+	})
+
+	t.Run("IsNotResponse", func(t *testing.T) {
+		frame := Frame{
+			Header: Header{
+				Flags: FlagIsRequest,
+			},
+		}
+
+		want := false
+
+		if frame.IsResponse() != want {
+			t.Fatalf("IsResponse = true, want false")
+		}
+	})
+}
+
+/**************************************************************************************/

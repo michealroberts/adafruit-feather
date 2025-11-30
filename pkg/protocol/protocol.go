@@ -107,3 +107,10 @@ func (f *Frame) SetRequest() {
 }
 
 /**************************************************************************************/
+
+// IsResponse returns true if the frame's FlagIsRequest bit is not set.
+func (f Frame) IsResponse() bool {
+	return (f.Flags & FlagIsRequest) == 0
+}
+
+/**************************************************************************************/
