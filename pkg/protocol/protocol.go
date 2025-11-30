@@ -100,3 +100,10 @@ func (f Frame) IsRequest() bool {
 }
 
 /**************************************************************************************/
+
+// SetRequest sets the FlagIsRequest bit in the frame's Flags field.
+func (f *Frame) SetRequest() {
+	f.Flags |= FlagIsRequest
+}
+
+/**************************************************************************************/

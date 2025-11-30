@@ -47,3 +47,45 @@ func TestFrameIsRequest(t *testing.T) {
 }
 
 /**************************************************************************************/
+
+func TestSetRequestFlag(t *testing.T) {
+	t.Run("SetRequest", func(t *testing.T) {
+		frame := Frame{
+			Header: Header{
+				Flags: 0,
+			},
+		}
+
+		frame.SetRequest()
+
+		want := true
+
+		if frame.IsRequest() != want {
+			t.Fatalf("IsRequest = false, want true")
+		}
+	})
+
+	t.Run("SetRequestIdempotent", func(t *testing.T) {
+		frame := Frame{
+			Header: Header{
+				Flags: 0,
+			},
+		}
+
+		frame.SetRequest()
+
+		want := true
+
+		if frame.IsRequest() != want {
+			t.Fatalf("IsRequest = false, want true")
+		}
+
+		frame.SetRequest()
+
+		if frame.IsRequest() != want {
+			t.Fatalf("IsRequest = false, want true")
+		}
+	})
+}
+
+/**************************************************************************************/
