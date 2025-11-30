@@ -27,3 +27,13 @@ const (
 )
 
 /**************************************************************************************/
+
+// Size constants define the byte lengths of protocol frame components:
+const (
+	SyncSize         int = 1
+	HeaderSize       int = 8 // version + flags + messageId(2) + size(2) + group + code
+	ChecksumSize     int = 4
+	MinimumFrameSize int = SyncSize + HeaderSize + ChecksumSize
+)
+
+/**************************************************************************************/
