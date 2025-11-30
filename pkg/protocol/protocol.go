@@ -51,3 +51,13 @@ type Header struct {
 }
 
 /**************************************************************************************/
+
+// Command represents the command details within a protocol frame:
+type Command struct {
+	// Group represents the command group identifier, (e.g., system, sensor, etc):
+	Group uint8
+	// Code represents the specific command code within the group:
+	Code uint8
+}
+
+/**************************************************************************************/
