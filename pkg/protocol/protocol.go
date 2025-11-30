@@ -37,3 +37,17 @@ const (
 )
 
 /**************************************************************************************/
+
+// Header represents the metadata for a protocol frame:
+type Header struct {
+	// Version is the protocol version number:
+	Version uint8
+	// Flags indicate specific conditions for the frame:
+	Flags uint8
+	// MessageId is a unique identifier for the message within the protocol:
+	MessageID uint16
+	// Size is the total size of the frame including header, command, and payload:
+	Size uint16
+}
+
+/**************************************************************************************/
