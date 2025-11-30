@@ -128,3 +128,10 @@ func (f Frame) IsError() bool {
 }
 
 /**************************************************************************************/
+
+// SetError sets the FlagIsError bit in the frame's Flags field.
+func (f *Frame) SetError() {
+	f.Flags |= FlagIsError
+}
+
+/**************************************************************************************/

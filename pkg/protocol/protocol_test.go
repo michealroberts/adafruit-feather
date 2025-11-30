@@ -195,3 +195,45 @@ func TestFrameIsError(t *testing.T) {
 }
 
 /**************************************************************************************/
+
+func TestSetErrorFlag(t *testing.T) {
+	t.Run("SetError", func(t *testing.T) {
+		frame := Frame{
+			Header: Header{
+				Flags: 0,
+			},
+		}
+
+		frame.SetError()
+
+		want := true
+
+		if frame.IsError() != want {
+			t.Fatalf("IsError = false, want true")
+		}
+	})
+
+	t.Run("SetErrorIdempotent", func(t *testing.T) {
+		frame := Frame{
+			Header: Header{
+				Flags: 0,
+			},
+		}
+
+		frame.SetError()
+
+		want := true
+
+		if frame.IsError() != want {
+			t.Fatalf("IsError = false, want true")
+		}
+
+		frame.SetError()
+
+		if frame.IsError() != want {
+			t.Fatalf("IsError = false, want true")
+		}
+	})
+}
+
+/**************************************************************************************/
