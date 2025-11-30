@@ -93,3 +93,10 @@ func NewFrame(id uint16, group, code uint8, payload []byte) *Frame {
 }
 
 /**************************************************************************************/
+
+// IsRequest returns true if the frame's FlagIsRequest bit is set.
+func (f Frame) IsRequest() bool {
+	return (f.Flags & FlagIsRequest) != 0
+}
+
+/**************************************************************************************/
