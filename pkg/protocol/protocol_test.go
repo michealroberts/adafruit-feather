@@ -121,3 +121,45 @@ func TestFrameIsResponse(t *testing.T) {
 }
 
 /**************************************************************************************/
+
+func TestSetResponseFlag(t *testing.T) {
+	t.Run("SetResponse", func(t *testing.T) {
+		frame := Frame{
+			Header: Header{
+				Flags: FlagIsRequest,
+			},
+		}
+
+		frame.SetResponse()
+
+		want := true
+
+		if frame.IsResponse() != want {
+			t.Fatalf("IsResponse = false, want true")
+		}
+	})
+
+	t.Run("SetResponseIdempotent", func(t *testing.T) {
+		frame := Frame{
+			Header: Header{
+				Flags: FlagIsRequest,
+			},
+		}
+
+		frame.SetResponse()
+
+		want := true
+
+		if frame.IsResponse() != want {
+			t.Fatalf("IsResponse = false, want true")
+		}
+
+		frame.SetResponse()
+
+		if frame.IsResponse() != want {
+			t.Fatalf("IsResponse = false, want true")
+		}
+	})
+}
+
+/**************************************************************************************/

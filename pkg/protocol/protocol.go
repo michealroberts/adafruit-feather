@@ -114,3 +114,10 @@ func (f Frame) IsResponse() bool {
 }
 
 /**************************************************************************************/
+
+// SetResponse clears the FlagIsRequest bit in the frame's Flags field.
+func (f *Frame) SetResponse() {
+	f.Flags &^= FlagIsRequest
+}
+
+/**************************************************************************************/
