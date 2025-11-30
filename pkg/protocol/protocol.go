@@ -73,3 +73,23 @@ type Frame struct {
 }
 
 /**************************************************************************************/
+
+// NewFrame creates a new Frame with the given parameters. By default it sets the frame
+// as a request and calculates the total packet size.
+func NewFrame(id uint16, group, code uint8, payload []byte) *Frame {
+	return &Frame{
+		Header: Header{
+			Version:   Version,
+			MessageID: id,
+			Flags:     FlagIsRequest,
+			Size:      uint16(len(payload)) + uint16(HeaderSize),
+		},
+		Command: Command{
+			Group: group,
+			Code:  code,
+		},
+		Payload: payload,
+	}
+}
+
+/**************************************************************************************/
