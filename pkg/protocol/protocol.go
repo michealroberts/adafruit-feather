@@ -9,6 +9,15 @@ package protocol
 
 /**************************************************************************************/
 
+import (
+	"errors"
+	"hash/crc32"
+
+	"github.com/michealroberts/adafruit-feather/internal/crc"
+)
+
+/**************************************************************************************/
+
 // SyncByte is the fixed marker that identifies the start of a frame on the wire:
 const SyncByte uint8 = 0xAA
 
@@ -132,6 +141,65 @@ func (f Frame) IsError() bool {
 // SetError sets the FlagIsError bit in the frame's Flags field.
 func (f *Frame) SetError() {
 	f.Flags |= FlagIsError
+}
+
+/**************************************************************************************/
+
+// Serialize converts the Frame into a byte slice suitable for transmission over the
+// wire according to the protocol specification.
+func (f Frame) Serialize() ([]byte, error) {
+	if f.Version == 0 {
+		return nil, errors.New("frame version is not set")
+	}
+
+	size := uint16(len(f.Payload)) + uint16(8)
+
+	if f.Size != 0 && f.Size != size {
+		return nil, errors.New("frame size field does not match actual payload length + header size")
+	}
+
+	// The buffer contains enough bytes for the total size of the frame, plus one for the
+	// sync byte and four for the CRC32 checksum:
+	buffer := make([]byte, SyncSize+int(size)+ChecksumSize)
+
+	// Add the sync byte to the buffer:
+	buffer[0] = SyncByte
+
+	// Add the version to the header:
+	buffer[1] = f.Version
+
+	// Add the flags to the header:
+	buffer[2] = f.Flags
+
+	// Add the message ID to the header:
+	buffer[3] = byte(f.MessageID >> 8)
+	buffer[4] = byte(f.MessageID)
+
+	// Add the size to the header:
+	buffer[5] = byte(size >> 8)
+	buffer[6] = byte(size)
+
+	// Add the command to the buffer:
+	buffer[7] = f.Group
+	buffer[8] = f.Code
+
+	// Add the payload to the buffer:
+	copy(buffer[9:], f.Payload)
+
+	// Calculate the CRC32 checksum for the frame (excluding the sync byte and checksum
+	// itself):
+	checksum := crc32.Checksum(buffer[:size+1], crc.Table)
+
+	// Calculate the offset for the checksum based on the sync size and frame size:
+	offset := SyncSize + int(size)
+
+	// Add the 4-byte checksum to the buffer (big-endian):
+	buffer[offset] = byte(checksum >> 24)
+	buffer[offset+1] = byte(checksum >> 16)
+	buffer[offset+2] = byte(checksum >> 8)
+	buffer[offset+3] = byte(checksum)
+
+	return buffer, nil
 }
 
 /**************************************************************************************/
