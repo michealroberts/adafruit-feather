@@ -203,3 +203,96 @@ func (f Frame) Serialize() ([]byte, error) {
 }
 
 /**************************************************************************************/
+
+// Parse takes a byte slice containing a serialized frame and reconstructs the Frame
+// structure. It returns an error if the frame is invalid or cannot be parsed.
+func Parse(buffer []byte) (*Frame, uint16, error) {
+	size := uint16(0)
+
+	// Check if the buffer length is less than the minimum frame size:
+	if len(buffer) < MinimumFrameSize {
+		return nil, 0, errors.New("frame is too short")
+	}
+
+	// Ensure that the first byte in the buffer is the sync byte:
+	if buffer[0] != SyncByte {
+		return nil, 0, errors.New("invalid sync byte")
+	}
+
+	version := buffer[1]
+
+	// Check if the version is correct:
+	if version != Version {
+		return nil, 0, errors.New("unsupported protocol version")
+	}
+
+	// Extract size (header-without-sync + payload), big-endian:
+	size = uint16(buffer[5])<<8 | uint16(buffer[6])
+
+	// Check if the buffer length is less than the declared size:
+	if len(buffer) < SyncSize+int(size)+ChecksumSize {
+		return nil, 0, errors.New("incomplete frame, buffer shorter than declared size")
+	}
+
+	checksum := crc32.Checksum(buffer[:SyncSize+int(size)], crc.Table)
+
+	// Calculate the offset for the checksum based on the sync size and frame size:
+	offset := SyncSize + int(size)
+
+	// Verify the CRC32 checksum for the frame (including the sync byte but excluding the
+	// checksum field itself):
+	crc := uint32(buffer[offset])<<24 | uint32(buffer[offset+1])<<16 | uint32(buffer[offset+2])<<8 | uint32(buffer[offset+3])
+
+	if checksum != crc {
+		return nil, 0, errors.New("invalid CRC32 checksum")
+	}
+
+	// Extract the message ID from the buffer:
+	id := uint16(buffer[3])<<8 | uint16(buffer[4])
+
+	// Extract the flags from the buffer:
+	flags := buffer[2]
+
+	// Extract the group from the buffer:
+	group := buffer[7]
+
+	// Extract the code from the buffer:
+	code := buffer[8]
+
+	payloadSize := int(size) - HeaderSize
+
+	if payloadSize < 0 {
+		return nil, 0, errors.New("invalid payload size, frame size is too small")
+	}
+
+	// Calculate the start index for the payload in the buffer:
+	start := SyncSize + HeaderSize
+
+	// Calculate the end index for the payload in the buffer:
+	end := start + payloadSize
+
+	payload := make([]byte, payloadSize)
+	copy(payload, buffer[start:end])
+
+	// Re-construct the header from the buffer:
+	header := Header{
+		Version:   version,
+		Flags:     flags,
+		MessageID: id,
+		Size:      size,
+	}
+
+	// Re-construct the command from the buffer:
+	command := Command{
+		Group: group,
+		Code:  code,
+	}
+
+	return &Frame{
+		Header:  header,
+		Command: command,
+		Payload: payload,
+	}, size, nil
+}
+
+/**************************************************************************************/
